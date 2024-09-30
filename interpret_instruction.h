@@ -1,4 +1,5 @@
 // Format 3/4 instructions
+#include<stdlib.h>
 #define ADD 0x18
 #define ADDF 0x58
 #define AND 0x40
@@ -63,6 +64,24 @@
 #define SIO 0xF0
 #define TIO 0xF8
 
+// Masks
+#define OP_MASK 0xFC000000
+#define ADDR_TYPE_MASK 0x03000000
+#define E_BIT_MASK 0x00100000
+#define ADDR_MODE_MASK 0x00E00000
+
+// Shifts
+#define OP_SHIFT 6
+#define ADDR_TYPE_SHIFT 6
+//For e bit just check > 0
+#define ADDR_MODE_SHIFT 5
+
+// Shift amount for hex char
+#define HEX_CHAR_SHIFT_AMOUNT 4
+
+int ParseAndLogInstruction(unsigned int SAMPLE);
+void logInstruction(Instruction *instruction);
+
 //Addressing types
 const static int FORMAT2[] = {ADDR, CLEAR, COMPR, DIVR, MULR, RMO, SHIFTL, SHIFTR, SUBR, SVC, TIXR};
 const static char *FORMAT2_Mnemonic[] = {"ADDR", "CLEAR", "COMPR", "DIVR", "MULR", "RMO", "SHIFTL", "SHIFTR", "SUBR", "SVC", "TIXR"};
@@ -80,17 +99,34 @@ const static char *FORMAT3_4_Mnemonic[] = {"ADD", "ADDF", "AND", "COMP", "COMPF"
 const static int FORMAT1[] = {FIX, FLOAT, HIO, NORM, SIO, TIO};
 const char *FORMAT1_Mnemonic[] = {"FIX", "FLOAT", "HIO", "NORM", "SIO", "TIO"};
 
-const static char *ADDR_TYPE[] = {"simple","indirect","immediate","simple"};
+typedef struct{
+    char mnemonic[19];
+    int format;
+    char TAAM[19];
+    char OAT[19];
+    int objectCode;
+} Instruction;
 
-const static int SAMPLE = 0x03260011; 
+const static char *TAAM_LOOKUP_ARRAY[] = {"absolute","pc","base",NULL,"absolute_indexed","pc_indexed","based_indexed"};
 
-#define OP_MASK 0xFC000000
-#define ADDR_TYPE_MASK 0x03000000
-#define E_BIT_MASK 0x00010000
-#define ADDR_MODE_MASK 0x00E00000
+const static char *ADDR_TYPE[] = {"simple","immediate","indirect","simple"};
 
-#define OP_SHIFT 6
-#define ADDR_TYPE_SHIFT 6
-//For e bit just check > 0
-#define ADDR_MODE_SHIFT 5
+/* Going to try the simple array method for now 
+struct AddressModeItem {
+    const char* mode;
+    const int key;
+};
+
+struct AddressModeItem TAAM_LOOKUP[] = {
+    {"absolute",0},
+    {"pc",1},
+    {"base",2},
+    {"absolute_indexed",4},
+    {"pc_indexed",5},
+    {"based_indexed",6}
+};
+*/
+
+
+
 
