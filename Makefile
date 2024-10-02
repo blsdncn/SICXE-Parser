@@ -2,7 +2,7 @@ CC = gcc
 
 CFLAGS = -g
 
-EXEC = parser
+EXEC = disassem
 
 SRCS = parser.c interpret_instruction.c
 
