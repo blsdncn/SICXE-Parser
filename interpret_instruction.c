@@ -5,7 +5,9 @@
 
 void logInstruction(char *buffer, size_t size, Instruction *instruction){
     char objCodeStr[9];
-    snprintf(objCodeStr,sizeof(objCodeStr),"%0*X",instruction->format*2,instruction->objectCode);
+    // Pads with leading zeros to ensure proper width based on format (2*format, as 4-> 4 bytes-> 8 hex char, 3->3 bytes,2->2...).
+    // Fixes case where 0x050000 would be printed as 50000
+    snprintf(objCodeStr,sizeof(objCodeStr),"%0*X",instruction->format*2,instruction->objectCode); 
     snprintf(buffer,size,"%-19s%-19d%-19s%-19s%-19s\n"
     ,instruction->mnemonic,instruction->format,instruction->OAT,instruction->TAAM,objCodeStr);
 }
@@ -66,9 +68,11 @@ int ParseAndLogInstruction(unsigned int SAMPLE, FILE *stream){
         strcpy(instruction->TAAM,TAAM_LOOKUP_ARRAY[TAAM_index]); 
         strcpy(instruction->OAT,ADDR_TYPE[OAT_index]);
     }
-    //How much to shift the sample by to get the object code depending on the format
+    // How much to shift the sample by to get the object code depending on the format
+    // Format 4 doesn't need to shift, 3 shifts by 1 byte, 2 shifts by 2 bytes,
+    // 1 shifts by 3 bytes
     instruction->objectCode = SAMPLE >> ((4-instruction->format)*8); 
-    char buffer[98];
+    char buffer[OUTPUT_BUFFER_SIZE];
     logInstruction(buffer,sizeof(buffer),instruction);
     fprintf(stream,"%s",buffer);
     //printf("%s",buffer);

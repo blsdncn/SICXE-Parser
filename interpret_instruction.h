@@ -1,7 +1,7 @@
-// Format 3/4 instructions
 #include<stdlib.h>
 #include <stdio.h>
 
+// Format 3/4 instructions
 #define ADD 0x18
 #define ADDF 0x58
 #define AND 0x40
@@ -78,6 +78,8 @@
 //For e bit just check > 0
 #define ADDR_MODE_SHIFT 21
 
+#define OUTPUT_BUFFER_SIZE 98 //Room for 5 strings of 19 characters, a newline and a null terminator.
+
 typedef struct{
     char mnemonic[19];
     int format;
@@ -105,25 +107,10 @@ const static char *FORMAT3_4_Mnemonic[] = {"ADD", "ADDF", "AND", "COMP", "COMPF"
 const static int FORMAT1[] = {FIX, FLOAT, HIO, NORM, SIO, TIO};
 const static char *FORMAT1_Mnemonic[] = {"FIX", "FLOAT", "HIO", "NORM", "SIO", "TIO"};
 
-const static char *TAAM_LOOKUP_ARRAY[] = {"absolute","pc","base",NULL,"absolute_indexed","pc_indexed","based_indexed"};
+const static char *TAAM_LOOKUP_ARRAY[] = {"absolute","pc","base",NULL,"absolute_indexed","pc_indexed","base_indexed"};
 
 const static char *ADDR_TYPE[] = {"simple","immediate","indirect","simple"};
 
-/* Going to try the simple array method for now 
-struct AddressModeItem {
-    const char* mode;
-    const int key;
-};
-
-struct AddressModeItem TAAM_LOOKUP[] = {
-    {"absolute",0},
-    {"pc",1},
-    {"base",2},
-    {"absolute_indexed",4},
-    {"pc_indexed",5},
-    {"based_indexed",6}
-};
-*/
 
 
 
