@@ -3,14 +3,16 @@
 #include <stdbool.h>
 #include <string.h>
 
-void logInstruction(Instruction *instruction){
-    printf("%-19s%-19d%-19s%-19s%-19x\n"
-    ,instruction->mnemonic,instruction->format,instruction->OAT,instruction->TAAM,instruction->objectCode);
+void logInstruction(char *buffer, size_t size, Instruction *instruction){
+    char objCodeStr[9];
+    snprintf(objCodeStr,sizeof(objCodeStr),"%0*X",instruction->format*2,instruction->objectCode);
+    snprintf(buffer,size,"%-19s%-19d%-19s%-19s%-19s\n"
+    ,instruction->mnemonic,instruction->format,instruction->OAT,instruction->TAAM,objCodeStr);
 }
 
-int ParseAndLogInstruction(unsigned int SAMPLE){
-//    int mask = OP_MASK;
-    int opcode = (SAMPLE & OP_MASK) >> OP_SHIFT*HEX_CHAR_SHIFT_AMOUNT; 
+int ParseAndLogInstruction(unsigned int SAMPLE, FILE *stream){
+    //int mask = OP_MASK;
+    int opcode = (SAMPLE & OP_MASK) >> OP_SHIFT; 
     Instruction *instruction = malloc(sizeof(Instruction));
     instruction->format = 0;
     ///////////////////////////////////////////////////////
@@ -39,6 +41,7 @@ int ParseAndLogInstruction(unsigned int SAMPLE){
     //Checking if mnemonic was found.
     if(instruction->mnemonic == NULL){
         printf("Op: %x. Mnemonic not found.\n",opcode);
+        free(instruction);
         return -1;
     }
     ///////////////////////////////////////////////////////
@@ -48,11 +51,27 @@ int ParseAndLogInstruction(unsigned int SAMPLE){
         strcpy(instruction->OAT,"");
     } else {
         instruction->format = 3 + ((SAMPLE & E_BIT_MASK) > 0); //If e bit is set, format is 4, otherwise it's 3
-        strcpy(instruction->TAAM,TAAM_LOOKUP_ARRAY[(SAMPLE & ADDR_MODE_MASK) >> ADDR_MODE_SHIFT*HEX_CHAR_SHIFT_AMOUNT]); 
-        strcpy(instruction->OAT,ADDR_TYPE[(SAMPLE & ADDR_TYPE_MASK) >> ADDR_TYPE_SHIFT*HEX_CHAR_SHIFT_AMOUNT]);
+        int TAAM_index = (SAMPLE & ADDR_MODE_MASK) >> ADDR_MODE_SHIFT;
+        int OAT_index = (SAMPLE & ADDR_TYPE_MASK) >> ADDR_TYPE_SHIFT;
+        if(TAAM_index >= sizeof(TAAM_LOOKUP_ARRAY)/sizeof(TAAM_LOOKUP_ARRAY[0])){
+            printf("TAAM_index OOB: %d\n",TAAM_index);
+            free(instruction);
+            return -1;
+        }
+        if(OAT_index >= sizeof(ADDR_TYPE)/sizeof(ADDR_TYPE[0])){
+            printf("OAT_index OOB: %d\n",OAT_index);
+            free(instruction);
+            return -1;
+        }
+        strcpy(instruction->TAAM,TAAM_LOOKUP_ARRAY[TAAM_index]); 
+        strcpy(instruction->OAT,ADDR_TYPE[OAT_index]);
     }
-    instruction->objectCode = SAMPLE >> ((4-instruction->format)*8); //How much to shift the sample by to get the object code depending on the format
-    logInstruction(instruction);
+    //How much to shift the sample by to get the object code depending on the format
+    instruction->objectCode = SAMPLE >> ((4-instruction->format)*8); 
+    char buffer[98];
+    logInstruction(buffer,sizeof(buffer),instruction);
+    fprintf(stream,"%s",buffer);
+    //printf("%s",buffer);
     int format = instruction->format;
     free(instruction);
     return format;

@@ -1,5 +1,7 @@
 // Format 3/4 instructions
 #include<stdlib.h>
+#include <stdio.h>
+
 #define ADD 0x18
 #define ADDF 0x58
 #define AND 0x40
@@ -71,18 +73,22 @@
 #define ADDR_MODE_MASK 0x00E00000
 
 // Shifts
-#define OP_SHIFT 6
-#define ADDR_TYPE_SHIFT 6
+#define OP_SHIFT 24
+#define ADDR_TYPE_SHIFT 24
 //For e bit just check > 0
-#define ADDR_MODE_SHIFT 5
+#define ADDR_MODE_SHIFT 21
 
-// Shift amount for hex char
-#define HEX_CHAR_SHIFT_AMOUNT 4
+typedef struct{
+    char mnemonic[19];
+    int format;
+    char TAAM[19];
+    char OAT[19];
+    int objectCode;
+} Instruction;
 
-int ParseAndLogInstruction(unsigned int SAMPLE);
-void logInstruction(Instruction *instruction);
+int ParseAndLogInstruction(unsigned int SAMPLE, FILE *stream);
+void logInstruction(char *buffer, size_t size, Instruction *instruction);
 
-//Addressing types
 const static int FORMAT2[] = {ADDR, CLEAR, COMPR, DIVR, MULR, RMO, SHIFTL, SHIFTR, SUBR, SVC, TIXR};
 const static char *FORMAT2_Mnemonic[] = {"ADDR", "CLEAR", "COMPR", "DIVR", "MULR", "RMO", "SHIFTL", "SHIFTR", "SUBR", "SVC", "TIXR"};
 
@@ -97,15 +103,7 @@ const static char *FORMAT3_4_Mnemonic[] = {"ADD", "ADDF", "AND", "COMP", "COMPF"
                                         "STF", "STI", "STL", "STS", "STSW", "STT", "STX", "SUB", "SUBF", "TD", "TIX", "WD"};
 
 const static int FORMAT1[] = {FIX, FLOAT, HIO, NORM, SIO, TIO};
-const char *FORMAT1_Mnemonic[] = {"FIX", "FLOAT", "HIO", "NORM", "SIO", "TIO"};
-
-typedef struct{
-    char mnemonic[19];
-    int format;
-    char TAAM[19];
-    char OAT[19];
-    int objectCode;
-} Instruction;
+const static char *FORMAT1_Mnemonic[] = {"FIX", "FLOAT", "HIO", "NORM", "SIO", "TIO"};
 
 const static char *TAAM_LOOKUP_ARRAY[] = {"absolute","pc","base",NULL,"absolute_indexed","pc_indexed","based_indexed"};
 
