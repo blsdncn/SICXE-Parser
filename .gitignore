@@ -3,4 +3,4 @@ tester
 *.o
 obj_struct.txt
 .vscode
-parser
+disassem

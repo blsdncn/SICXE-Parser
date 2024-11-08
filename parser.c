@@ -1,3 +1,4 @@
+//parser.c
 #include "interpret_instruction.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -86,6 +87,10 @@ int main(int argc, char **argv){
                     if(currentPosition >= size){
                         break;
                     }
+                }
+                //flushing out the line after end of record is reached.
+                if (getline(&line, &len, objectFile) == -1) {
+                    break; // End of file or error
                 }
                 free(buffer);
             } else {
