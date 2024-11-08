@@ -4,3 +4,4 @@ tester
 obj_struct.txt
 .vscode
 disassem
+*.swp
