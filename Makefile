@@ -1,25 +1,27 @@
 CC = gcc
 
-CFLAGS = -g
+CFLAGS = -g -I$(LIB_DIR)
 
 EXEC = disassem
 
-SRCS = parser.c interpret_instruction.c
+LIB_DIR = disassemLib
 
-HEADERS = interpret_instruction.h
+SRCS = parser.c $(LIB_DIR)/interpret_instruction.c
 
-OBJS = $(SRCS:.c=.o)
+HEADERS = $(LIB_DIR)/interpret_instruction.h 
+
+OBJS = parser.o $(LIB_DIR)/interpret_instruction.o
 
 all: $(EXEC)
 
 $(EXEC): $(OBJS)
 	$(CC) $(CFLAGS) -o $(EXEC) $(OBJS)
 
-parser.o: parser.c interpret_instruction.h $(HEADERS)
+parser.o: parser.c $(HEADERS)
 	$(CC) $(CFLAGS) -c parser.c 
 
-interpret_instructions.o: interpret_instruction.c interpret_instruction.h $(HEADERS)
-	$(CC) $(CFLAGS) -c interpret_instructions.c 
+$(LIB_DIR)/interpret_instruction.o: $(LIB_DIR)/interpret_instruction.c $(HEADERS)
+	$(CC) $(CFLAGS) -c $(LIB_DIR)/interpret_instruction.c -o $(LIB_DIR)/interpret_instruction.o
 
 clean:
 	rm -f $(EXEC) $(OBJS)
