@@ -14,11 +14,11 @@ int main(int argc, char **argv){
 		printf("Please specify an input file.\n");
 		return 1;
 	}
-	const char *input_file = argv[1];
+	const char *input_file_path = argv[1];
 	char HEADER[OUTPUT_BUFFER_SIZE];
     snprintf(HEADER,97,"%-19s%-19s%-19s%-19s%-19s\n",
     "INSTR","FORMAT","OAT","TAAM","OBJ");
-	FILE *objectFile = fopen(input_file,"r");
+	FILE *objectFile = fopen(input_file_path,"r");
 	if(objectFile == NULL){
 		printf("Couldn't open file.\n");
 		return 1;
@@ -96,8 +96,15 @@ int main(int argc, char **argv){
                 SAMPLE = strtol(chunk,NULL,16);
             }
             //Shiftback is the format of the instruction, or -1 if the instruction is invalid
-            int shiftback = ParseAndLogInstruction(SAMPLE,outputFile);
-            if(shiftback == -1) return 1;
+            Instruction *instruction = (Instruction*) malloc(sizeof(Instruction));
+            if(ParseInstruction(SAMPLE, instruction)){
+                printf("Instruction parsing falied.\n");
+                free(instruction);
+                return 1;
+            }
+            int shiftback = instruction->format;
+            logInstruction(instruction,outputFile);
+            free(instruction);
             ptr += (8-(4-shiftback)*2); //How much we advance the current position by based on format
             if(ptr >= size){
                 break; }
@@ -108,3 +115,4 @@ int main(int argc, char **argv){
     fclose(outputFile);
     return 0;
 }
+

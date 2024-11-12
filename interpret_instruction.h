@@ -82,15 +82,17 @@
 #define OUTPUT_BUFFER_SIZE 98 //Room for 5 strings of 19 characters, a newline and a null terminator.
 
 typedef struct{
+    int opcode;
     char mnemonic[19];
     int format;
-    char TAAM[19];
-    char OAT[19];
+    int TAAM_index;
+    int OAT_index;
     int objectCode;
 } Instruction;
 
-int ParseAndLogInstruction(unsigned int SAMPLE, FILE *stream);
-void logInstruction(char *buffer, size_t size, Instruction *instruction);
+int ParseInstruction(unsigned int SAMPLE,Instruction *instruction);
+void logInstruction(Instruction *instruction, FILE *stream);
+void ObjCodeStr(char *buffer, size_t bufferSize, int objectCode, int format);
 
 const static int FORMAT2[] = {ADDR, CLEAR, COMPR, DIVR, MULR, RMO, SHIFTL, SHIFTR, SUBR, SVC, TIXR};
 const static char *FORMAT2_Mnemonic[] = {"ADDR", "CLEAR", "COMPR", "DIVR", "MULR", "RMO", "SHIFTL", "SHIFTR", "SUBR", "SVC", "TIXR"};
@@ -111,6 +113,7 @@ const static char *FORMAT1_Mnemonic[] = {"FIX", "FLOAT", "HIO", "NORM", "SIO", "
 const static char *TAAM_LOOKUP_ARRAY[] = {"absolute","pc","base",NULL,"absolute_indexed","pc_indexed","base_indexed"};
 
 const static char *ADDR_TYPE[] = {"simple","immediate","indirect","simple"};
+
 
 
 
