@@ -1,14 +1,14 @@
-INSTR   FORMAT   OAT             TAAM            OBJ
-LDB     4        Immediate       absolute        6910083E
-STL     3        Simple          base            174000        
-LDA     3        Indirect        base            024000
-CLEAR   2                                         B400
-LDX     3        Immediate       absolute        050000
-LDA     3        Immediate       absolute        010005
-TD      3        Simple          pc              E32009         
-JEQ     3        Simple          pc              332FFA         
-LDCH    3        Simple          pc_indexed      53AFEC         
-WD      3        Simple          pc              DF2000         
-LDA     3        Simple          absolute        000001         
-LDA     4        Simple          absolute        03101090       
-LDA     3        Simple          absolute        000007
+INSTR              FORMAT             OAT                TAAM               OBJ                
+LDB                4                  immediate          absolute           6910083E           
+STL                3                  simple             base               174000             
+LDA                3                  indirect           base               024000             
+CLEAR              2                                                        B400               
+LDX                3                  immediate          absolute           050000             
+LDA                3                  immediate          absolute           010005             
+TD                 3                  simple             pc                 E32009             
+JEQ                3                  simple             pc                 332FFA             
+LDCH               3                  simple             pc_indexed         53AFEC             
+WD                 3                  simple             pc                 DF2000             
+LDA                3                  simple             absolute           000001             
+LDA                4                  simple             absolute           03101090           
+LDA                3                  simple             absolute           000007             
